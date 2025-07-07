@@ -11,7 +11,7 @@ from django.conf import settings
 from django.db import transaction
 import uuid
 from rest_framework.response import Response
-from .tasks import send_payment_confirmation_email
+from .tasks import send_payment_confirmation_email, send_booking_confirmation_email
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -24,6 +24,45 @@ class ListingViewSet(viewsets.ModelViewSet):
 class BookingViewSet(viewsets.ModelViewSet):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
+
+    def create(self, request, *args, **kwargs):
+        #user = request.user
+        user = User.objects.first() #For testing purposes
+        data = request.data
+
+        try:
+            listing_id = data.get("listing_id")
+            check_in = data.get("check_in")
+            check_out = data.get("check_out")
+            guests = data.get("guests")
+
+            if not all([listing_id, check_in, check_out, guests]):
+                return Response({"error": "All fields are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                listing = Listing.objects.get(id=listing_id)
+            except Listing.DoesNotExist:
+                return Response({"error": "Listing not found."}, status=status.HTTP_404_NOT_FOUND)
+
+            listing_title = listing.title
+            user_email = user.email
+
+            booking = Booking.objects.create(
+                        user=user,
+                        listing=listing,
+                        check_in=check_in,
+                        check_out=check_out,
+                        guests=guests,
+                        booking_status='pending'
+                    )
+
+            send_booking_confirmation_email.delay(user_email, listing_title)
+
+            return Response({"message" : "Booking created successfully."}, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+                return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 chapa = Chapa(settings.CHAPA_SECRET_KEY)
 
