@@ -1,4 +1,4 @@
-# ✈️ ALX Travel App with Chapa Payment Integration
+# ✈️ ALX Travel App
 
 This project is a robust Django-based travel booking application designed to demonstrate the integration of **Chapa's Payment Gateway API** for secure transactions and the use of **Celery with RabbitMQ** for efficient asynchronous task processing, such as sending booking confirmation emails.
 
