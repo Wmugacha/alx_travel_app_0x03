@@ -46,9 +46,9 @@ POST to `/api/initiate-payment/` with:
 ## 📸 Screenshots
 
 ### 🧾 Chapa Checkout Page
-![Chapa Checkout](./screenshots/chapa_checkout.jpg)
+![Chapa Checkout Page](./screenshots/chapa_checkout.jpg)
 
 ---
 
 ### 🧾 Test Payment Receipt
-![Payment Receipt](./screenshots/chapa_receipt.jpg)
+![Chapa receipt](./screenshots/chapa_receipt.jpg)
